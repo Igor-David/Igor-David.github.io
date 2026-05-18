@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>科技创新复习卡片 (完整版)</title>
+<style>
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+    max-width: 650px; 
+    margin: 2rem auto; 
+    text-align: center; 
+    background-color: #f4f4f9; 
+    color: #333;
+  }
+  .card { 
+    background: white; 
+    border-radius: 12px; 
+    padding: 2.5rem 2rem; 
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08); 
+    min-height: 250px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    margin-bottom: 1.5rem;
+    transition: border 0.3s ease;
+  }
+  .question { 
+    font-size: 1.3rem; 
+    font-weight: bold; 
+    margin-bottom: 1.5rem; 
+    color: #1a1a1a;
+  }
+  .answer { 
+    font-size: 1.05rem; 
+    color: #444; 
+    display: none; 
+    text-align: left; 
+    white-space: pre-line; 
+    margin-top: 1rem; 
+    border-top: 2px dashed #eee; 
+    padding-top: 1.5rem; 
+    line-height: 1.7;
+  }
+  .controls button { 
+    padding: 12px 20px; 
+    margin: 5px; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    background-color: #007aff; 
+    color: white; 
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  .controls button:hover { background-color: #005bb5; }
+  .controls button.mastered-btn { background-color: #34c759; }
+  .controls button.mastered-btn:hover { background-color: #248a3d; }
+  .progress { margin-bottom: 1.5rem; color: #666; font-size: 1rem; font-weight: bold;}
+  .mastered-border { border: 4px solid #34c759; }
+</style>
+</head>
+<body>
+  <h2>💡 科技创新简答题复习 (19题完整版)</h2>
+  <div class="progress">
+    当前进度: <span id="current-idx">1</span> / 19 &nbsp;&nbsp;|&nbsp;&nbsp; 
+    已掌握: <span id="mastered-count">0</span> 题
+  </div>
+  
+  <div class="card" id="flashcard">
+    <div class="question" id="question-text">题目加载中...</div>
+    <div class="answer" id="answer-text">答案加载中...</div>
+  </div>
+  
+  <div class="controls">
+    <button onclick="prevCard()">⬅️ 上一题</button>
+    <button onclick="toggleAnswer()" id="toggle-btn">👁️ 显示答案</button>
+    <button onclick="markMastered()" class="mastered-btn">✅ 已掌握</button>
+    <button onclick="nextCard()">下一题 ➡️</button>
+  </div>
+
+  <script>
+    const flashcards = [
+      {q: '科技强国的内涵是什么？', a: '应当具有居于世界前列的科技实力和创新能力，支撑经济实力、国防实力、综合国力整体跃升，增进人类福祉，推动全球发展。', mastered: false},
+      {q: '科技强国必须具备的基本要素有哪些？（五大要素）', a: '一是拥有强大的基础研究和原始创新能力。\n二是拥有强大的关键核心技术攻关能力。\n三是拥有强大的国际影响力和引领力。\n四是拥有强大的高水平科技人才培养和集聚能力。\n五是拥有强大的科技治理体系和治理能力。', mastered: false},
+      {q: '建设科技强国有哪些实现路径/战略部署？', a: '第一，充分发挥新型举国体制优势，加快推进高水平科技自立自强。\n第二，扎实推动科技创新和产业创新深度融合，助力发展新质生产力。\n第三，全面深化科技体制机制改革，充分激发创新创造活力。\n第四，一体推进教育科技人才事业发展，构筑人才竞争优势。\n第五，深入践行构建人类命运共同体理念，推动科技开放合作。', mastered: false},
+      {q: '科技强国建设的实践逻辑是什么？', a: '集中体现在两个维度：\n一是外部压力下的生存与竞争逻辑，即面对大变局与技术封锁，必须走自主创新之路，实现科技自立自强。\n二是内部需求下的发展与可持续逻辑，即转变依靠资源要素投入的粗放型发展方式，通过创新驱动提高全要素生产率，实现高质量发展。', mastered: false},
+      {q: '科技创新系统观包含哪些理论内涵？', a: '首先，创新是一种价值实现过程，需完成从科学研究到推广应用的三级跳。\n其次，科技成果要面向经济社会发展主战场和人民群众新需求，转化为人民福祉。\n再次，创新是以科技创新为核心的全面创新（包括理论、体制、制度等）。\n最后，创新是一种新的发展理念，须把科技创新摆在国家发展全局的核心位置。', mastered: false},
+      {q: '深刻理解自主创新的内涵及分类？', a: '内涵：在对外开放条件下，立足自身形成具有自主知识产权的核心技术，最终实现关键核心技术自主可控、科技自立自强的过程。\n\n包含三个层次：\n1. 原始创新（获得科学发现和重大的技术发明）。\n2. 集成创新（技术成果融合汇聚）。\n3. 消化吸收再创新（吸收全球成果并再创新）。', mastered: false},
+      {q: '基础研究的内涵是什么？', a: '是为获得关于客观现象和可观察的事实的基本原理的新知识所进行的实验性或理论性工作，它不以任何近期专门或具体的应用或使用为目的。', mastered: false},
+      {q: '什么是科技创新制高点？', a: '通常是指前沿领域的最高点、创新链条上的关键点、创新体系中的控制点。\n\n其核心特征是竞争性、排他性、优先性。失去科技制高点就难免会被“卡脖子”。', mastered: false},
+      {q: '科技创新的模式分类有哪些？', a: '技术推动模式、需求拉动模式、技术与市场交互作用模式、一体化模式、网络模式。', mastered: false},
+      {q: '简述科学与技术的区别？', a: '目的不同：科学是为了认识自然，技术是为了改造自然。\n过程不同：科学是由实践到认识，技术是由认识到实践。\n形态不同：科学呈现为知识形态，技术呈现为物化/专利形态。\n评价标准不同：科学评价真理性（是与非），技术评价价值性（好与坏/效率）。\n作用不同：科学影响长远且不确定，技术影响近期且确定。', mastered: false},
+      {q: '科研选题的根本原则有哪些？', a: '需求性：立足国家战略与产业痛点。\n创新性：力求实现从“0到1”的突破，避免低水平重复。\n科学性：建立在坚实的科学基础之上，遵循科学规范并可被验证。\n可行性：综合评估技术积累、团队能力和研究条件，跳一跳够得着。', mastered: false},
+      {q: '创新的风险性包含哪些？', a: '指创新系统的复杂性使实际结果和预期发生背离，并导致利益损失的可能性。\n主要包括技术风险、财务风险、生产风险、组织风险、市场风险、社会风险、政策风险、自然风险等。', mastered: false},
+      {q: '怎么看待天津市大力建设“天开高教科创园”？', a: '实质是提高天津市区域创新体系的整体效能。\n关键是加强技术创新服务体系建设，深化科技成果转化机制改革，加快概念验证、中试验证平台布局，完善长期资本支持政策以降低创新风险和成本、加速创新。', mastered: false},
+      {q: '如何理解负责任的研究和创新？', a: '科学技术是一把“双刃剑”，人类完全有理由把高尚的道德标准置于客观真理的发现者之上。\n\n负责任创新应当承载人类命运共同体的发展理念，在追求经济、社会、生态价值的基础上，实现以人民为中心的人本价值，将科技成果转化为人民福祉。', mastered: false},
+      {q: '全球科技治理的内涵是什么？', a: '指国际社会通过规则、规范、制度和程序，共同管理引导全球科技的发展与应用。\n\n主体包括主权国家、国际组织、跨国公司等多元主体。\n客体涵盖技术标准、知识产权、科研伦理、应对全球挑战等。', mastered: false},
+      {q: '如何理解“统筹发展和安全”的深刻内涵？', a: '辩证统一：安全是发展的前提，发展是安全的保障，二者是有机整体。\n\n发展是指通过开放合作汇聚创新资源，提升科技创新能力。\n安全是指动态有效维护国家科技安全，保障关键核心技术自主可控。\n精髓在于把握好“度”，避免“一管就死”和“一放就乱”。', mastered: false},
+      {q: '如何正确认识教育、科技、人才是驱动创新的三驾马车？', a: '第一，必须坚持教育优先发展，加快建设高质量教育体系。\n第二，必须坚持创新驱动，健全新型举国体制，推进关键核心技术攻关。\n第三，必须坚持人才是第一资源，提高自主培养质量并聚天下英才而用之。', mastered: false},
+      {q: '强化基础研究的重点举措有哪些？', a: '1. 强化基础研究前瞻性、战略性、系统性布局。\n2. 深化基础研究体制机制改革。\n3. 建设基础研究高水平支撑平台。\n4. 加强基础研究人才队伍建设。\n5. 广泛开展基础研究国际合作。\n6. 塑造有利于基础研究的创新生态。', mastered: false},
+      {q: '科学家精神的具体内涵是什么？', a: '1. 胸怀祖国、服务人民的爱国精神。\n2. 勇攀高峰、敢为人先的创新精神。\n3. 追求真理、严谨治学的求实精神。\n4. 淡泊名利、潜心研究的奉献精神。\n5. 集智攻关、团结协作的协同精神。\n6. 甘为人梯、奖掖后学的育人精神。', mastered: false}
+    ];
+
+    let currentIndex = 0;
+
+    function updateCard() {
+      document.getElementById('question-text').innerText = flashcards[currentIndex].q;
+      document.getElementById('answer-text').innerText = flashcards[currentIndex].a;
+      document.getElementById('answer-text').style.display = 'none';
+      document.getElementById('toggle-btn').innerText = '👁️ 显示答案';
+      document.getElementById('current-idx').innerText = currentIndex + 1;
+      
+      const cardEl = document.getElementById('flashcard');
+      if (flashcards[currentIndex].mastered) {
+        cardEl.classList.add('mastered-border');
+      } else {
+        cardEl.classList.remove('mastered-border');
+      }
+      
+      updateMasteredCount();
+    }
+
+    function toggleAnswer() {
+      const ans = document.getElementById('answer-text');
+      const btn = document.getElementById('toggle-btn');
+      if (ans.style.display === 'none') {
+        ans.style.display = 'block';
+        btn.innerText = '🙈 隐藏答案';
+      } else {
+        ans.style.display = 'none';
+        btn.innerText = '👁️ 显示答案';
+      }
+    }
+
+    function nextCard() {
+      currentIndex = (currentIndex + 1) % flashcards.length;
+      updateCard();
+    }
+
+    function prevCard() {
+      currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length;
+      updateCard();
+    }
+
+    function markMastered() {
+      flashcards[currentIndex].mastered = !flashcards[currentIndex].mastered;
+      updateCard();
+    }
+
+    function updateMasteredCount() {
+      const count = flashcards.filter(c => c.mastered).length;
+      document.getElementById('mastered-count').innerText = count;
+    }
+
+    // 初始化第一张卡片
+    updateCard();
+  </script>
+</body>
+</html>
